@@ -17,7 +17,7 @@ const validate =
         .map(() => error.message.replaceAll('"', ''))
         .join(', ');
       return next(
-        new AppException(httpStatus.UNPROCESSABLE_ENTITY, errorMessage)
+        new AppException(errorMessage, httpStatus.UNPROCESSABLE_ENTITY)
       );
     }
     Object.assign(req, value);

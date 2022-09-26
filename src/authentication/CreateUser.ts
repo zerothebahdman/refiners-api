@@ -15,13 +15,13 @@ export default class CreateUser {
 
       if (_userExists)
         return next(
-          new AppException(`Opps!, ${_userExists.email} is taken`, 422)
+          new AppException(`Oops!, ${_userExists.email} is taken`, 422)
         );
 
       /** if user does not exist create the user using the user service */
       const { _user, OTP_CODE } = await this.authService.createUser(req.body);
 
-      /** Send email verfication to user */
+      /** Send email verification to user */
       await emailService._sendUserEmailVerificationEmail(
         _user.firstName,
         _user.email,

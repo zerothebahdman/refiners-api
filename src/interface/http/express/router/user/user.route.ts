@@ -1,17 +1,17 @@
-import { Router, Request, Response, NextFunction } from 'express';
+import { Router } from 'express';
 import { userController } from '../../controllers/controllers.module';
 import {
   createUser,
   loginUser,
   verifyUserEmail,
 } from '../../../../../authentication/authentication.module';
-import { isAuthenticated } from '../../middlewares/auth.middleware';
+import { isUserAuthenticated } from '../../middlewares/auth.middleware';
 
 const route = Router();
 
 route
   .route('/')
-  .get(isAuthenticated, (req, res, next) => {
+  .get(isUserAuthenticated, (req, res, next) => {
     userController.getAllUsers(req, res, next);
   })
   .post((req, res, next) => {

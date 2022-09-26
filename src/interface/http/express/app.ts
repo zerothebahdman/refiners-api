@@ -3,7 +3,7 @@ import cors from 'cors';
 import config from 'config';
 import enforce from 'express-sslify';
 import userRouter from './router/user/user.route';
-import ErrorHandler from './middlewares/error_handler.middleware';
+import { ErrorHandler } from './middlewares/error_handler.middleware';
 import AppException from '../../../exceptions/AppException';
 import morgan from 'morgan';
 
@@ -23,7 +23,7 @@ app.disable('x-powered-by');
 
 app.use('/api/v1/user', userRouter);
 
-app.all('*', (req: Request, res: Response, next: NextFunction) => {
+app.all('*', (req: Request, _res: Response, next: NextFunction) => {
   return next(
     new AppException(`Cant find ${req.originalUrl} on the server.`, 404)
   );

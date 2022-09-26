@@ -1,63 +1,51 @@
 import { NextFunction, Request, Response } from 'express';
 import { createHash } from 'node:crypto';
-import { PrismaClient } from '@prisma/client';
-import { TokenMustStillBeValid } from './rules/rules.module';
+import { OtpExpired, TokenMustStillBeValid } from './rules/rules.module';
 import AppException from '../exceptions/AppException';
-import log from '../logging/logger';
-import TokenService from '../services/Token.service';
-import { User } from '../services/User.service';
-
-const { user } = new PrismaClient();
+import EmailService from '../services/Email.service';
+import moment from 'moment';
+import User from '../database/models/user.model';
+import HelperClass from '../utils/helper';
 
 export default class VerifyUserEmail {
+  constructor(private readonly emailService: EmailService) {}
+
   async execute(req: Request, res: Response, next: NextFunction) {
     try {
-      /** Check if the hashed token sent to the user has not being tampered with*/
       const _hashedEmailToken: string = createHash('sha512')
-        .update(req.params.token)
-        .digest('base64');
+        .update(req.body.otp)
+        .digest('hex');
 
-      /** Check if the token is the same with the one stores in the database
-       * check if the email has not beign verified
-       * check if the token has expired
-       */
-      let _user: User = null;
-
-      _user = await user.findFirst({
-        where: {
-          isEmailVerified: false,
-          token: _hashedEmailToken,
-          token_expires_at: { gt: new Date(Date.now()) },
-        },
-        select: { id: true, name: true, email: true },
+      const _user = await User.findOne({
+        $and: [
+          {
+            isEmailVerified: false,
+            email_verification_token: _hashedEmailToken,
+          },
+        ],
       });
 
       if (!_user) return TokenMustStillBeValid(next);
+      if ((_user.email_verification_token_expires_at < moment()) as boolean)
+        return OtpExpired(next);
 
-      /** Veiry user email
-       * set token and token_expires_at field to null cause its no longer needed
-       */
-      await user.update({
-        where: { id: _user.id },
-        data: {
-          isEmailVerified: true,
-          email_verified_at: new Date(Date.now()),
-          token: null,
-          token_expires_at: null,
-        },
-      });
+      _user.isEmailVerified = true;
+      _user.email_verification_token = null;
+      _user.email_verification_token_expires_at = null;
+      _user.email_verified_at = new Date(Date.now());
+      _user.save();
 
-      /** Genereate a new JWT token*/
-      const token = await TokenService._generateJwtToken(_user.id);
+      await this.emailService._sendWelcomeEmail(
+        HelperClass.titleCase(_user.firstName),
+        _user.email
+      );
 
       return res.status(201).json({
         status: `success`,
         message: `Your email: ${_user.email} has been verified`,
-        token,
       });
     } catch (err: any) {
-      log.error(err);
-      return next(new AppException(err.message, err.status));
+      return next(new AppException(err.status, err.message));
     }
   }
 }

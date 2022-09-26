@@ -2,7 +2,7 @@ export default class AppException extends Error {
   public statusCode: number;
   public status: string;
 
-  constructor(statusCode: number, message: string, stack: string = '') {
+  constructor(message: string, statusCode: number, stack: string = '') {
     super(message);
     this.statusCode = statusCode;
     this.status = `${statusCode}`.startsWith('4') ? 'Error' : 'Fail';

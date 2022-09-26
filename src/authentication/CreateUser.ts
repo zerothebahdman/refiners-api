@@ -1,21 +1,17 @@
 import { Request, Response, NextFunction } from 'express';
-import UserService, { User } from '../services/User.service';
 import AppException from '../exceptions/AppException';
 
-import { PrismaClient } from '@prisma/client';
 import log from '../logging/logger';
 import EmailService from '../services/Email.service';
-import TokenService from '../services/Token.service';
-
-const { user } = new PrismaClient();
+import User from '../database/models/user.model';
+import AuthService from '../services/Auth.service';
 const emailService = new EmailService();
 
 export default class CreateUser {
+  constructor(private readonly authService: AuthService) {}
   async createUser(req: Request, res: Response, next: NextFunction) {
     try {
-      const _userExists = await user.findUnique({
-        where: { email: req.body.email },
-      });
+      const _userExists = await User.findOne({ email: req.body.email });
 
       if (_userExists)
         return next(
@@ -23,21 +19,18 @@ export default class CreateUser {
         );
 
       /** if user does not exist create the user using the user service */
-      const { _user, jwtToken, emailVerificationToken }: any =
-        await UserService.createUser(req.body, next);
+      const { _user, OTP_CODE } = await this.authService.createUser(req.body);
 
       /** Send email verfication to user */
       await emailService._sendUserEmailVerificationEmail(
-        _user.name,
+        _user.firstName,
         _user.email,
-        emailVerificationToken,
-        req
+        OTP_CODE
       );
 
       res.status(200).json({
         status: 'success',
         message: `We've sent an verification email to your mail`,
-        jwtToken: jwtToken,
         user: _user,
       });
     } catch (err: any) {

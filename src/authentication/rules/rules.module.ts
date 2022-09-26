@@ -2,5 +2,6 @@
 
 import EmailShouldNotHaveBeenVerified from './EmailShouldNotHaveBeenVerified';
 import TokenMustStillBeValid from './TokenMustStillBeValid';
+import OtpExpired from './OtpExpired';
 
-export { EmailShouldNotHaveBeenVerified, TokenMustStillBeValid };
+export { EmailShouldNotHaveBeenVerified, TokenMustStillBeValid, OtpExpired };

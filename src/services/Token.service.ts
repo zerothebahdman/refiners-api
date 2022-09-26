@@ -1,12 +1,12 @@
 import jwt from 'jsonwebtoken';
 import { join } from 'path';
 import log from '../logging/logger';
-import config from 'config';
+import config from '../../config/default';
 import { readFile } from 'fs/promises';
 import AppException from '../exceptions/AppException';
 import { NextFunction } from 'express';
-import httpStatus from 'http-status';
 import { createHash, randomBytes } from 'node:crypto';
+import httpStatus from 'http-status';
 
 let PRIVATE_KEY: string = '';
 (async () => {
@@ -37,10 +37,19 @@ export default class TokenService {
    * @param uuid
    * @returns
    */
-  static async _generateJwtToken(uuid: string): Promise<string> {
-    const token = jwt.sign({ uuid }, PRIVATE_KEY, {
+  async _generateAccessToken(id: string, name: string): Promise<string> {
+    const token = jwt.sign({ sub: id, name, type: 'access' }, PRIVATE_KEY, {
       algorithm: 'RS512',
-      expiresIn: config.get<string>('tokenExpiration'),
+      expiresIn: config.jwtAccessTokenExpiration,
+    });
+
+    return token;
+  }
+
+  async _generateRefreshToken(id: string, name: string): Promise<string> {
+    const token = jwt.sign({ sub: id, name, type: 'refresh' }, PRIVATE_KEY, {
+      algorithm: 'RS512',
+      expiresIn: config.jwtRefreshTokenExpiration,
     });
 
     return token;
@@ -51,40 +60,35 @@ export default class TokenService {
    * @param next inbuilt middleware function
    * @returns
    */
-  static async verifyToken(token: string, next: NextFunction) {
+  async verifyToken(token: string, next: NextFunction) {
     try {
       const _token = jwt.verify(token, PUBLIC_KEY, { algorithms: ['RS512'] });
       return _token;
     } catch (err: any) {
-      log.error(err);
       if (err.name === 'TokenExpiredError')
-        return next(
+        next(
           new AppException(
-            'Opps!, your token has expired.',
-            httpStatus.FORBIDDEN
+            'Oops!, your token has expired.',
+            httpStatus.UNAUTHORIZED
           )
         );
-
-      return next(new AppException(err.message, err.status));
+      if (err.name === 'JsonWebTokenError')
+        next(
+          new AppException(
+            'Oops!, your token has expired.',
+            httpStatus.UNAUTHORIZED
+          )
+        );
+      return next(new AppException(err.status, err.message));
     }
   }
 
   /**Generate token that will be sent to the users email for verification
    * Generate random string using randomBytes from node crypto library
    */
-  static async generateTokenUsedForEmailVerification() {
-    /** use the randomBytes func from node crypto module to generate a random string of token*/
-    const emailVerificationToken = randomBytes(7)
-      .toString('base64')
-      .replace('/', '-');
-
-    log.info(emailVerificationToken);
-
-    /** hash the random string generated */
-    const hashedEmailVerificationToken = createHash('sha512')
-      .update(emailVerificationToken)
-      .digest('base64');
-
-    return { emailVerificationToken, hashedEmailVerificationToken };
+  async TokenGenerator() {
+    const Token = randomBytes(50).toString('hex');
+    const hashedToken = createHash('sha512').update(Token).digest('hex');
+    return { Token, hashedToken };
   }
 }

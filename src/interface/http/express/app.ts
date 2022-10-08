@@ -1,23 +1,26 @@
 import express, { Application, NextFunction, Request, Response } from 'express';
 import cors from 'cors';
-import config from 'config';
+import config from '../../../../config/default';
+import enforce from 'express-sslify';
+import router from './router/v1/router.module';
+import {
+  ErrorHandler,
+  ErrorConverter,
+} from './middlewares/error_handler.middleware';
+import AppException from '../../../exceptions/AppException';
+import morgan from 'morgan';
 import hpp from 'hpp';
 import rateLimit from 'express-rate-limit';
 import helmet from 'helmet';
 import mongoSanitize from 'express-mongo-sanitize';
-import enforce from 'express-sslify';
-import { ErrorHandler } from './middlewares/error_handler.middleware';
-import AppException from '../../../exceptions/AppException';
-import morgan from 'morgan';
-import router from './router/v1/router.module';
 
 const app: Application = express();
 
-if (config.get<string>('env') === 'production') {
+if (config.env === 'production') {
   app.use(enforce.HTTPS({ trustProtoHeader: true }));
 }
 
-if (config.get<string>('env') === 'development') {
+if (config.env === 'development') {
   app.use(morgan('dev'));
 }
 
@@ -47,5 +50,7 @@ app.all('*', (req: Request, _res: Response, next: NextFunction) => {
     new AppException(`Cant find ${req.originalUrl} on the server.`, 404)
   );
 });
+
+app.use(ErrorConverter);
 app.use(ErrorHandler);
 export default app;

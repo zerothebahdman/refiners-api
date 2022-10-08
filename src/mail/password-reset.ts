@@ -141,37 +141,6 @@ const PASSWORD_RESET_EMAIL = (url: string) => `<!DOCTYPE html>
 														class="image_block" role="presentation"
 														style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;"
 														width="100%">
-														<tr>
-															<td
-																style="width:100%;padding-top:35px;padding-right:0px;padding-left:0px;">
-																<div align="center" style="line-height:10px"><img
-																		src="https://res.cloudinary.com/dyhmtsvfz/image/upload/v1656576343/agsaap%20logo/Gradient_Name_2x_loef9k.png"
-																		style="display: block; height: auto; border: 0; width: 121px; max-width: 100%;"
-																		width="121" /></div>
-															</td>
-														</tr>
-													</table>
-													<table border="0" cellpadding="0" cellspacing="0"
-														class="divider_block" role="presentation"
-														style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;"
-														width="100%">
-														<tr>
-															<td
-																style="padding-top:20px;padding-right:10px;padding-bottom:20px;padding-left:10px;">
-																<div align="center">
-																	<table border="0" cellpadding="0" cellspacing="0"
-																		role="presentation"
-																		style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;"
-																		width="60%">
-																		<tr>
-																			<td class="divider_inner"
-																				style="font-size: 1px; line-height: 1px; border-top: 1px solid #BBBBBB;">
-																				<span> </span></td>
-																		</tr>
-																	</table>
-																</div>
-															</td>
-														</tr>
 													</table>
 													<table border="0" cellpadding="0" cellspacing="0"
 														class="heading_block" role="presentation"
@@ -199,7 +168,7 @@ const PASSWORD_RESET_EMAIL = (url: string) => `<!DOCTYPE html>
 																	</p>
 																	<p style="margin: 0; margin-bottom: 16px;">Somebody
 																		requested a new password for the
-																		<strong>AGSAAP</strong> account associated with
+																		<strong>Refiners Cooperative</strong> account associated with
 																		your email.</p>
 																	<p style="margin: 0; margin-bottom: 16px;">No
 																		changes have been made to your account yet.</p>
@@ -240,10 +209,10 @@ const PASSWORD_RESET_EMAIL = (url: string) => `<!DOCTYPE html>
 																	<p style="margin: 0; margin-bottom: 16px;">If you
 																		did not request a new password, please let us
 																		know immediately by replying to this email <a
-																			href="mailto:support@agsaap.com"
-																			target="_blank">support@agsaap.com</a>.</p>
-																	<p style="margin: 0;">Yours,<br />The
-																		<strong>AGSAAP</strong> team</p>
+																			href="mailto:support@refinerscooperative.com"
+																			target="_blank">support@refinerscooperative.com</a>.</p>
+																	<p style="margin: 0;">Yours,<br />
+																		<strong>Refiners Cooperative</strong></p>
 																</div>
 															</td>
 														</tr>

@@ -3,11 +3,7 @@ import httpStatus from 'http-status';
 import EncryptionService from './Encryption.service';
 import TokenService from './Token.service';
 import { NextFunction } from 'express';
-import moment from 'moment';
-import { createHash } from 'node:crypto';
-import EmailService from './Email.service';
 import { UserInterface } from '../../index';
-import HelperClass from '../utils/helper';
 import User from '../database/models/user.model';
 
 interface AuthRequest extends UserInterface {}
@@ -15,26 +11,18 @@ interface AuthRequest extends UserInterface {}
 export default class AuthService {
   constructor(
     private readonly encryptionService: EncryptionService,
-    private readonly tokenService: TokenService,
-    private readonly emailService: EmailService
+    private readonly tokenService: TokenService
   ) {}
 
   async createUser(createUser: UserInterface) {
     const _hashedPassword = await this.encryptionService.hashPassword(
-      createUser.password
+      createUser.username
     );
-    const OTP_CODE = HelperClass.generateOtp<string>('6') as string;
-    const hashedToken = createHash('sha512')
-      .update(String(OTP_CODE))
-      .digest('hex');
-
-    createUser.email_verification_token = hashedToken;
-    createUser.email_verification_token_expires_at = moment().add('6', 'hours');
     createUser.password = _hashedPassword;
 
     const _user = await User.create(createUser);
 
-    return { _user, OTP_CODE };
+    return { _user };
   }
 
   async loginUser(
@@ -46,10 +34,8 @@ export default class AuthService {
     user: UserInterface;
   }> {
     const _userExists = await User.findOne({
-      email: loginPayload.email,
-    })
-      .select('+password')
-      .populate('school');
+      username: loginPayload.username,
+    }).select('+password');
     if (
       !_userExists ||
       !(await this.encryptionService.comparePassword(
@@ -61,14 +47,6 @@ export default class AuthService {
         new AppException(
           `Oops!, Incorrect email or password`,
           httpStatus.UNAUTHORIZED
-        )
-      );
-
-    if (_userExists.isEmailVerified !== true)
-      next(
-        new AppException(
-          'Oops! email address is not verified',
-          httpStatus.FORBIDDEN
         )
       );
 
@@ -106,39 +84,39 @@ export default class AuthService {
     );
   }
 
-  async resendOtp({ req, next }: { req: AuthRequest; next: NextFunction }) {
-    const _user = await User.findOne({
-      email: req.email,
-      deletedAt: null,
-    });
-    if (!_user)
-      next(
-        new AppException('Oops!, user does not exist', httpStatus.NOT_FOUND)
-      );
+  // async resendOtp({ req, next }: { req: AuthRequest; next: NextFunction }) {
+  //   const _user = await User.findOne({
+  //     email: req.email,
+  //     deletedAt: null,
+  //   });
+  //   if (!_user)
+  //     next(
+  //       new AppException('Oops!, user does not exist', httpStatus.NOT_FOUND)
+  //     );
 
-    const OTP_CODE = HelperClass.generateOtp<string>('6') as string;
-    if (_user.isEmailVerified === true) {
-      next(
-        new AppException(
-          'Oops!, email is already verified',
-          httpStatus.FORBIDDEN
-        )
-      );
-    } else {
-      const hashedToken = createHash('sha512')
-        .update(String(OTP_CODE))
-        .digest('hex');
+  //   const OTP_CODE = HelperClass.generateOtp<string>('6') as string;
+  //   if (_user.isEmailVerified === true) {
+  //     next(
+  //       new AppException(
+  //         'Oops!, email is already verified',
+  //         httpStatus.FORBIDDEN
+  //       )
+  //     );
+  //   } else {
+  //     const hashedToken = createHash('sha512')
+  //       .update(String(OTP_CODE))
+  //       .digest('hex');
 
-      _user.email_verification_token = hashedToken;
-      _user.email_verification_token_expires_at = moment().add('6', 'hours');
-      await _user.save();
+  //     _user.email_verification_token = hashedToken;
+  //     _user.email_verification_token_expires_at = moment().add('6', 'hours');
+  //     await _user.save();
 
-      await this.emailService._sendUserEmailVerificationEmail(
-        _user.firstName,
-        _user.email,
-        OTP_CODE
-      );
-    }
-    return OTP_CODE;
-  }
+  //     await this.emailService._sendUserEmailVerificationEmail(
+  //       _user.firstName,
+  //       _user.email,
+  //       OTP_CODE
+  //     );
+  //   }
+  //   return OTP_CODE;
+  // }
 }

@@ -32,7 +32,7 @@ export default class VerifyUserEmail {
       _user.isEmailVerified = true;
       _user.email_verification_token = null;
       _user.email_verification_token_expires_at = null;
-      _user.email_verified_at = new Date(Date.now());
+      _user.email_verified_at = moment().format();
       _user.save();
 
       await this.emailService._sendWelcomeEmail(

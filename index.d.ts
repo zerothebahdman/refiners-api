@@ -1,6 +1,9 @@
+import { Moment } from "moment";
+
 export interface UserInterface {
   firstName: string;
   lastName: string;
+  username: string;
   email: string;
   phoneNumber: string;
   password: string;
@@ -15,21 +18,11 @@ export interface UserInterface {
   permissions: string[];
   email_verification_token: string;
   isEmailVerified: boolean;
-  password_updated_at: Date;
+  password_updated_at: Date | string;
   password_reset_token: string;
-  password_reset_token_expires_at: Date;
-  email_verified_at: Date;
+  password_reset_token_expires_at: Moment | string;
+  email_verified_at: Date | string;
   email_verification_token_expires_at: Moment;
   active: boolean;
   tokens: { token: string; expiresIn: Date; tokenType: string };
-  school: SchoolInterface;
-  billing: Object<{
-    plan: string;
-    cycle: Object<{ startDate: Date; endDate: Date }>;
-    cycleId: string;
-    status: string;
-    renew: boolean;
-    switchPlan: boolean;
-    paymentCustomerId: string;
-  }>;
 }

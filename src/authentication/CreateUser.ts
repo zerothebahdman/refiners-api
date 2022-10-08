@@ -5,27 +5,32 @@ import log from '../logging/logger';
 import EmailService from '../services/Email.service';
 import User from '../database/models/user.model';
 import AuthService from '../services/Auth.service';
+import httpStatus from 'http-status';
 const emailService = new EmailService();
 
 export default class CreateUser {
   constructor(private readonly authService: AuthService) {}
-  async createUser(req: Request, res: Response, next: NextFunction) {
+  async create(req: Request, res: Response, next: NextFunction) {
     try {
-      const _userExists = await User.findOne({ email: req.body.email });
+      const _userNameExists = await User.findOne({
+        username: req.body.username,
+      });
 
-      if (_userExists)
+      if (_userNameExists)
         return next(
-          new AppException(`Oops!, ${_userExists.email} is taken`, 422)
+          new AppException(
+            `Oops!, ${_userNameExists.username} is taken`,
+            httpStatus.UNPROCESSABLE_ENTITY
+          )
         );
-
       /** if user does not exist create the user using the user service */
-      const { _user, OTP_CODE } = await this.authService.createUser(req.body);
+      const { _user } = await this.authService.createUser(req.body);
 
       /** Send email verification to user */
-      await emailService._sendUserEmailVerificationEmail(
+      await emailService._sendUserLoginCredentials(
         _user.firstName,
         _user.email,
-        OTP_CODE
+        _user.username
       );
 
       res.status(200).json({

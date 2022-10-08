@@ -62,7 +62,7 @@ export default class EmailService {
         break;
       case 'password-reset':
         mailOptions.html = PASSWORD_RESET_EMAIL(data.url);
-        mailOptions.subject = `[URGENT] AGSAAP - ${subject}`;
+        mailOptions.subject = `[URGENT] - ${subject}`;
         break;
       case 'reset-password-successful':
         mailOptions.html = PASSWORD_RESET_SUCCESSFUL();

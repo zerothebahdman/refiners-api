@@ -45,7 +45,7 @@ export default class AuthService {
     )
       next(
         new AppException(
-          `Oops!, Incorrect email or password`,
+          `Oops!, Incorrect username or password`,
           httpStatus.UNAUTHORIZED
         )
       );

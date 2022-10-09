@@ -1,5 +1,6 @@
 import { Schema, model } from 'mongoose';
 import { UserInterface } from '../../../index';
+import { ROLES } from '../../utils/constants';
 
 const UserSchema = new Schema<UserInterface>(
   {
@@ -13,6 +14,7 @@ const UserSchema = new Schema<UserInterface>(
       required: [true, 'Oops! you need to specify a name'],
       lowercase: true,
     },
+    username: String,
     email: { type: String, required: true, unique: true, lowercase: true },
     phoneNumber: {
       type: String,
@@ -28,27 +30,25 @@ const UserSchema = new Schema<UserInterface>(
       ],
       select: false,
     },
-    avatar: {
-      image: { type: String },
-      meta: Object,
-    },
+    // avatar: {
+    //   image: { type: String },
+    //   meta: Object,
+    // },
     gender: { type: String, enum: ['male', 'female'], required: true },
     address: String,
     role: {
       type: String,
-      enum: ['ADMIN', 'USER'],
-      default: 'USER',
-      uppercase: true,
+      enum: Object.values(ROLES),
+      default: ROLES.USER,
     },
-    school: { type: Schema.Types.ObjectId, ref: 'School' },
     occupation: String,
-    isEmailVerified: { type: Boolean, default: false },
+    // isEmailVerified: { type: Boolean, default: false },
     password_updated_at: Date,
     password_reset_token: String,
     password_reset_token_expires_at: Date,
-    email_verified_at: Date,
-    email_verification_token: String,
-    email_verification_token_expires_at: Date,
+    // email_verified_at: Date,
+    // email_verification_token: String,
+    // email_verification_token_expires_at: Date,
     active: {
       type: Boolean,
       default: true,
@@ -69,7 +69,7 @@ const UserSchema = new Schema<UserInterface>(
         delete ret.__v;
         delete ret.password;
         delete ret.password_reset;
-        delete ret.avatar.meta;
+        // delete ret.avatar.meta;
         return ret;
       },
     },

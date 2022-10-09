@@ -1,10 +1,10 @@
 import app from './src/interface/http/express/app';
-import config from 'config';
+import config from './config/default';
 import log from './src/logging/logger';
-import connectDatabase from './src/database/connect';
+import connectDb from './src/database/connect';
 
-const port: number = config.get<number>('port');
-connectDatabase();
+const port: number = Number(config.port);
+connectDb();
 
 app.listen(port, () => {
   log.info(`App is running on port ${port}`);

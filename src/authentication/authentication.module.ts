@@ -9,19 +9,18 @@ import LoginUser from './LoginUser';
 import VerifyUserEmail from './VerifyUserEmail';
 import TokenService from '../services/Token.service';
 import AuthService from '../services/Auth.service';
+import PasswordReset from './PasswordReset';
 
 export const createUser = new CreateUser(
-  new AuthService(
-    new EncryptionService(),
-    new TokenService(),
-    new EmailService()
-  )
+  new AuthService(new EncryptionService(), new TokenService())
 );
 export const loginUser = new LoginUser(
-  new AuthService(
-    new EncryptionService(),
-    new TokenService(),
-    new EmailService()
-  )
+  new AuthService(new EncryptionService(), new TokenService())
+);
+
+export const passwordReset = new PasswordReset(
+  new TokenService(),
+  new EmailService(),
+  new EncryptionService()
 );
 export const verifyUserEmail = new VerifyUserEmail(new EmailService());

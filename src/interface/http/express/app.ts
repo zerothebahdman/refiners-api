@@ -1,42 +1,56 @@
 import express, { Application, NextFunction, Request, Response } from 'express';
 import cors from 'cors';
-import config from 'config';
+import config from '../../../../config/default';
 import enforce from 'express-sslify';
-import userRouter from './router/user/user.route';
-import { ErrorHandler } from './middlewares/error_handler.middleware';
+import router from './router/v1/router.module';
+import {
+  ErrorHandler,
+  ErrorConverter,
+} from './middlewares/error_handler.middleware';
 import AppException from '../../../exceptions/AppException';
 import morgan from 'morgan';
+import hpp from 'hpp';
+import rateLimit from 'express-rate-limit';
+import helmet from 'helmet';
+import mongoSanitize from 'express-mongo-sanitize';
 
 const app: Application = express();
 
-if (config.get<string>('env') === 'production') {
+if (config.env === 'production') {
   app.use(enforce.HTTPS({ trustProtoHeader: true }));
 }
 
-if (config.get<string>('env') === 'development') {
+if (config.env === 'development') {
   app.use(morgan('dev'));
 }
 
-app.use(express.json());
+app.use(express.json({ limit: '2MB' }));
+app.use(express.urlencoded({ extended: true }));
 app.use(cors());
+app.use(hpp());
+app.use(helmet());
+app.use(mongoSanitize());
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 20,
+  skipSuccessfulRequests: true,
+  message: 'Too many requests from this IP, please try again in an hour!',
+});
+app.use('/api', limiter);
 app.disable('x-powered-by');
 
-app.use('/api/v1/user', userRouter);
+app.get('/', (_req, res) => {
+  res.send('<b>Welcome to your App!</b>');
+});
+
+app.use('/api/v1', router);
 
 app.all('*', (req: Request, _res: Response, next: NextFunction) => {
   return next(
     new AppException(`Cant find ${req.originalUrl} on the server.`, 404)
   );
 });
+
+app.use(ErrorConverter);
 app.use(ErrorHandler);
 export default app;
-
-// class App {
-//   public app: Application;
-//   public port: number;
-
-//   constructor() {
-//     this.app = express();
-//     this.port = config.get<number>('port');
-//   };
-// }

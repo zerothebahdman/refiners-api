@@ -1,4 +1,4 @@
-import { Moment } from "moment";
+import { Moment } from 'moment';
 
 export interface UserInterface {
   firstName: string;
@@ -25,4 +25,9 @@ export interface UserInterface {
   email_verification_token_expires_at: Moment;
   active: boolean;
   tokens: { token: string; expiresIn: Date; tokenType: string };
+  loanApplicationStatus: string;
+  nextOfKin: string;
+  nextOfKinAddress: string;
+  bank: string;
+  accountNumber: string;
 }

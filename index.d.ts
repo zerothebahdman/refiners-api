@@ -46,3 +46,9 @@ export interface AccountInterface {
   balance: number;
   debt: number;
 }
+
+export interface NewsInterface {
+  title: string;
+  content: string;
+  date: string;
+}

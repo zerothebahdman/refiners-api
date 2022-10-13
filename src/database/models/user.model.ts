@@ -30,25 +30,22 @@ const UserSchema = new Schema<UserInterface>(
       ],
       select: false,
     },
-    // avatar: {
-    //   image: { type: String },
-    //   meta: Object,
-    // },
     gender: { type: String, enum: ['male', 'female'], required: true },
+    loanApplicationStatus: String,
     address: String,
     role: {
       type: String,
       enum: Object.values(ROLES),
       default: ROLES.USER,
     },
+    nextOfKin: String,
+    nextOfKinAddress: String,
+    bank: String,
+    accountNumber: String,
     occupation: String,
-    // isEmailVerified: { type: Boolean, default: false },
     password_updated_at: Date,
     password_reset_token: String,
     password_reset_token_expires_at: Date,
-    // email_verified_at: Date,
-    // email_verification_token: String,
-    // email_verification_token_expires_at: Date,
     active: {
       type: Boolean,
       default: true,
@@ -61,15 +58,11 @@ const UserSchema = new Schema<UserInterface>(
       transform: function (_doc, ret) {
         delete ret._id;
         delete ret.active;
-        delete ret.email_verification_token;
-        delete ret.email_verified_at;
-        delete ret.email_verification_token_expires_at;
         delete ret.password_reset_token;
         delete ret.password_reset_token_expires_at;
         delete ret.__v;
         delete ret.password;
         delete ret.password_reset;
-        // delete ret.avatar.meta;
         return ret;
       },
     },

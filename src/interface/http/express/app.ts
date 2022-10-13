@@ -24,8 +24,10 @@ if (config.env === 'development') {
   app.use(morgan('dev'));
 }
 
-app.use(express.json({ limit: '2MB' }));
-app.use(express.urlencoded({ extended: true }));
+// parse json request body
+app.use(express.json({ limit: '10mb' }));
+// parse urlencoded request body
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(cors());
 app.use(hpp());
 app.use(helmet());
@@ -34,7 +36,7 @@ const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 20,
   skipSuccessfulRequests: true,
-  message: 'Too many requests from this IP, please try again in an hour!',
+  message: 'Too many requests from this IP, please try again in an 15mins!',
 });
 app.use('/api', limiter);
 app.disable('x-powered-by');

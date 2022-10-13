@@ -10,6 +10,9 @@ import TransactionController from './transaction.controller';
 import TransactionService from '../../../../services/Transaction.service';
 import Transaction from '../../../../database/models/transaction.model';
 import Account from '../../../../database/models/Accounts.model';
+import News from '../../../../database/models/news.model';
+import NewsService from '../../../../services/News.service';
+import NewsController from './news.controller';
 
 export const userController = new UserController();
 export const membersController = new MembersController(
@@ -19,3 +22,5 @@ export const transactionController = new TransactionController(
   new TransactionService(Transaction),
   new MembersService(User, Account)
 );
+
+export const newsController = new NewsController(new NewsService(News));

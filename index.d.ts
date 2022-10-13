@@ -26,3 +26,18 @@ export interface UserInterface {
   active: boolean;
   tokens: { token: string; expiresIn: Date; tokenType: string };
 }
+
+export interface AccountInterface {
+  user: UserInterface | string;
+  accountInformation: Object<{
+    shareCapital: number;
+    thriftSavings: number;
+    commodityTrading: number;
+    specialDepositTotal: number;
+    fineTotal: number;
+    loanTotal: number;
+    projectFinancingTotal: number;
+  }>;
+  balance: number;
+  debt: number;
+}

@@ -31,7 +31,16 @@ const AccountSchema = new Schema<AccountInterface>(
     },
     ...auditableFields,
   },
-  { timestamps: true, toJSON: { virtuals: true } }
+  {
+    timestamps: true,
+    toJSON: {
+      virtuals: true,
+      transform: function (_doc, ret) {
+        delete ret._id;
+        return ret;
+      },
+    },
+  }
 );
 
 const Account = model<AccountInterface>('Account', AccountSchema);

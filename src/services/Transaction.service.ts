@@ -30,21 +30,21 @@ export default class TransactionService {
         .find({ user: filterOptions.user, account: 'shareCapital' })
         .skip(skip)
         .limit(limit);
-    } else if (filterOptions.fineStatement) {
+    } else if (filterOptions.fine) {
       transactions = await this.transactionRepository
-        .find({ user: filterOptions.user, account: 'fineStatement' })
+        .find({ user: filterOptions.user, account: 'fine' })
         .skip(skip)
         .limit(limit);
-    } else if (filterOptions.loanStatement) {
+    } else if (filterOptions.loan) {
       transactions = await this.transactionRepository
-        .find({ user: filterOptions.user, account: 'loanStatement' })
+        .find({ user: filterOptions.user, account: 'loan' })
         .skip(skip)
         .limit(limit);
-    } else if (filterOptions.projectFinancingStatement) {
+    } else if (filterOptions.projectFinancing) {
       transactions = await this.transactionRepository
         .find({
           user: filterOptions.user,
-          account: 'projectFinancingStatement',
+          account: 'projectFinancing',
         })
         .skip(skip)
         .limit(limit);

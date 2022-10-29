@@ -16,8 +16,14 @@ export default class CreateUser {
   ) {}
   async create(req: Request, res: Response, next: NextFunction) {
     try {
+      console.log(req.body);
+
       const _userNameExists = await User.findOne({
         username: req.body.username,
+      });
+
+      const phoneNumberExists = await User.findOne({
+        phoneNumber: req.body.phoneNumber,
       });
 
       if (_userNameExists)
@@ -27,9 +33,17 @@ export default class CreateUser {
             httpStatus.UNPROCESSABLE_ENTITY
           )
         );
+      if (phoneNumberExists)
+        return next(
+          new AppException(
+            `Oops!, ${phoneNumberExists.phoneNumber} is taken`,
+            httpStatus.UNPROCESSABLE_ENTITY
+          )
+        );
+
       /** if user does not exist create the user using the user service */
       const { _user } = await this.authService.createUser(req.body);
-      if (_user.role !== 'super_admin') {
+      if (_user.role === 'member') {
         await this.membersService.createAccountForMember(_user.id);
       }
 

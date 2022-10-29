@@ -4,6 +4,7 @@ import { ROLES } from '../../utils/constants';
 
 const UserSchema = new Schema<UserInterface>(
   {
+    title: String,
     firstName: {
       type: String,
       required: [true, 'Oops! you need to specify a name'],

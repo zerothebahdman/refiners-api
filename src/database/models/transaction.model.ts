@@ -13,7 +13,16 @@ const TransactionSchema = new Schema(
     balance: Number,
     ...auditableFields,
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+    toJSON: {
+      virtuals: true,
+      transform: function (_doc, ret) {
+        delete ret._id;
+        return ret;
+      },
+    },
+  }
 );
 
 const Transaction = model('Transaction', TransactionSchema);

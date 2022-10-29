@@ -3,11 +3,13 @@ import { AccountInterface, UserInterface } from '../../index';
 import QueryString from 'qs';
 import { ROLES } from '../utils/constants';
 import Account from '../database/models/Accounts.model';
+import EncryptionService from './Encryption.service';
 
 export default class MembersService {
   constructor(
     private readonly membersRepository: typeof User,
-    private readonly accountRepository: typeof Account
+    private readonly accountRepository: typeof Account,
+    private readonly encryptionService: EncryptionService
   ) {}
 
   async getAllMembers(
@@ -30,12 +32,18 @@ export default class MembersService {
 
   async updateMemberById(
     id: string,
-    member: UserInterface
+    updateBody: UserInterface
   ): Promise<UserInterface> {
-    const updatedMember = await this.membersRepository.findByIdAndUpdate(id, {
-      member,
-    });
-    return updatedMember;
+    if (updateBody.password)
+      updateBody.password = await this.encryptionService.hashPassword(
+        updateBody.password
+      );
+
+    const member = await this.membersRepository.findById(id);
+
+    Object.assign(member, updateBody);
+    await member.save();
+    return member;
   }
 
   async deleteMember(id: string): Promise<void> {
@@ -66,9 +74,9 @@ export default class MembersService {
     const members = await this.membersRepository.find({ role: ROLES.MEMBER });
     const thriftSavings: any[] = [];
     const shareCapital: any[] = [];
-    const fineStatement: any[] = [];
-    const loanStatement: any[] = [];
-    const projectFinancingStatement: any[] = [];
+    const fine: any[] = [];
+    const loan: any[] = [];
+    const projectFinancing: any[] = [];
     const specialDeposit: any[] = [];
     const commodityTrading: any[] = [];
 
@@ -79,11 +87,9 @@ export default class MembersService {
         });
         thriftSavings.push(account.accountInformation.thriftSavings);
         shareCapital.push(account.accountInformation.shareCapital);
-        fineStatement.push(account.accountInformation.fine);
-        loanStatement.push(account.accountInformation.loan);
-        projectFinancingStatement.push(
-          account.accountInformation.projectFinancing
-        );
+        fine.push(account.accountInformation.fine);
+        loan.push(account.accountInformation.loan);
+        projectFinancing.push(account.accountInformation.projectFinancing);
         specialDeposit.push(account.accountInformation.specialDeposit);
         commodityTrading.push(account.accountInformation.commodityTrading);
       })
@@ -91,9 +97,9 @@ export default class MembersService {
     const accountSummaries = {
       thriftSavings: thriftSavings.reduce((acc, account) => acc + account),
       shareCapital: shareCapital.reduce((acc, account) => acc + account),
-      fineStatement: fineStatement.reduce((acc, account) => acc + account),
-      loanStatement: loanStatement.reduce((acc, account) => acc + account),
-      projectFinancingStatement: projectFinancingStatement.reduce(
+      fine: fine.reduce((acc, account) => acc + account),
+      loan: loan.reduce((acc, account) => acc + account),
+      projectFinancing: projectFinancing.reduce(
         (acc, account) => acc + account
       ),
       specialDeposit: specialDeposit.reduce((acc, account) => acc + account),

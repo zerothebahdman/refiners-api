@@ -3,11 +3,13 @@ import { AccountInterface, UserInterface } from '../../index';
 import QueryString from 'qs';
 import { ROLES } from '../utils/constants';
 import Account from '../database/models/Accounts.model';
+import EncryptionService from './Encryption.service';
 
 export default class MembersService {
   constructor(
     private readonly membersRepository: typeof User,
-    private readonly accountRepository: typeof Account
+    private readonly accountRepository: typeof Account,
+    private readonly encryptionService: EncryptionService
   ) {}
 
   async getAllMembers(
@@ -30,12 +32,18 @@ export default class MembersService {
 
   async updateMemberById(
     id: string,
-    member: UserInterface
+    updateBody: UserInterface
   ): Promise<UserInterface> {
-    const updatedMember = await this.membersRepository.findByIdAndUpdate(id, {
-      member,
-    });
-    return updatedMember;
+    if (updateBody.password)
+      updateBody.password = await this.encryptionService.hashPassword(
+        updateBody.password
+      );
+
+    const member = await this.membersRepository.findById(id);
+
+    Object.assign(member, updateBody);
+    await member.save();
+    return member;
   }
 
   async deleteMember(id: string): Promise<void> {

@@ -19,7 +19,7 @@ router
   .route('/:memberId')
   .patch(
     isUserAuthenticated,
-    restrictAccessTo('super_admin'),
+    restrictAccessTo('super_admin', 'member'),
     (req, res, next) => {
       membersController.updateMember(req, res, next);
     }

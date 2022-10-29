@@ -2,6 +2,7 @@ import { Moment } from 'moment';
 
 export interface UserInterface {
   firstName: string;
+  title: string;
   lastName: string;
   username: string;
   email: string;

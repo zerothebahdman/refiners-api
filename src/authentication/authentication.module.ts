@@ -16,11 +16,11 @@ import User from '../database/models/user.model';
 
 export const createUser = new CreateUser(
   new AuthService(new EncryptionService(), new TokenService()),
-  new MembersService(User, Account)
+  new MembersService(User, Account, new EncryptionService())
 );
 export const loginUser = new LoginUser(
   new AuthService(new EncryptionService(), new TokenService()),
-  new MembersService(User, Account)
+  new MembersService(User, Account, new EncryptionService())
 );
 
 export const passwordReset = new PasswordReset(

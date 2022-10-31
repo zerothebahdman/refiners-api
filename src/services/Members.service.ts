@@ -12,9 +12,11 @@ export default class MembersService {
     private readonly encryptionService: EncryptionService
   ) {}
 
-  async getAllMembers(
-    filterOptions: QueryString.ParsedQs
-  ): Promise<{ members: UserInterface[]; page: number }> {
+  async getAllMembers(filterOptions: QueryString.ParsedQs): Promise<{
+    members: UserInterface[];
+    page: number;
+    totalNumberOfMembers: number;
+  }> {
     const page = Number(filterOptions.page) || 1;
     const limit = Number(filterOptions.limit) || 10;
     const skip = (page - 1) * limit;
@@ -22,7 +24,10 @@ export default class MembersService {
       .find({ role: ROLES.MEMBER })
       .skip(skip)
       .limit(limit);
-    return { members, page };
+    const totalNumberOfMembers = await this.membersRepository.countDocuments({
+      role: ROLES.MEMBER,
+    });
+    return { members, page, totalNumberOfMembers };
   }
 
   async getMemberById(id: string): Promise<UserInterface> {
@@ -110,7 +115,19 @@ export default class MembersService {
     return accountSummaries;
   }
 
-  async getAccountTotalDetails(filterOptions: QueryString.ParsedQs) {
+  async getAccountTotalDetails(
+    filterOptions: QueryString.ParsedQs
+  ): Promise<{
+    accountDetails: Omit<
+      import('mongoose').Document<unknown, any, AccountInterface> &
+        AccountInterface & { _id: import('mongoose').Types.ObjectId },
+      never
+    >[];
+    page: number;
+    limit: number;
+    skip: number;
+    totalNumberOfAccountDetails: number;
+  }> {
     const page = Number(filterOptions.page) || 1;
     const limit = Number(filterOptions.limit) || 10;
     const skip = (page - 1) * limit;
@@ -119,6 +136,7 @@ export default class MembersService {
     //   .skip(skip)
     //   .limit(limit);
     let accountDetails;
+    let totalNumberOfAccountDetails;
     if (filterOptions.account === 'shareCapital') {
       accountDetails = await this.accountRepository
         .find({
@@ -129,6 +147,11 @@ export default class MembersService {
         .limit(limit)
         .populate('user')
         .select('accountInformation.shareCapital');
+      totalNumberOfAccountDetails = await this.accountRepository.countDocuments(
+        {
+          'accountInformation.shareCapital': { $gt: 0 },
+        }
+      );
     } else if (filterOptions.account === 'thriftSavings') {
       accountDetails = await this.accountRepository
         .find({
@@ -139,6 +162,11 @@ export default class MembersService {
         .limit(limit)
         .populate('user')
         .select('accountInformation.thriftSavings');
+      totalNumberOfAccountDetails = await this.accountRepository.countDocuments(
+        {
+          'accountInformation.thriftSavings': { $gt: 0 },
+        }
+      );
     } else if (filterOptions.account === 'commodityTrading') {
       accountDetails = await this.accountRepository
         .find({
@@ -149,6 +177,11 @@ export default class MembersService {
         .limit(limit)
         .populate('user')
         .select('accountInformation.commodityTrading');
+      totalNumberOfAccountDetails = await this.accountRepository.countDocuments(
+        {
+          'accountInformation.commodityTrading': { $gt: 0 },
+        }
+      );
     } else if (filterOptions.account === 'loan') {
       accountDetails = await this.accountRepository
         .find({
@@ -159,6 +192,11 @@ export default class MembersService {
         .limit(limit)
         .populate('user')
         .select('accountInformation.loan');
+      totalNumberOfAccountDetails = await this.accountRepository.countDocuments(
+        {
+          'accountInformation.loan': { $gt: 0 },
+        }
+      );
     } else if (filterOptions.account === 'projectFinancing') {
       accountDetails = await this.accountRepository
         .find({
@@ -169,6 +207,11 @@ export default class MembersService {
         .limit(limit)
         .populate('user')
         .select('accountInformation.projectFinancing');
+      totalNumberOfAccountDetails = await this.accountRepository.countDocuments(
+        {
+          'accountInformation.projectFinancing': { $gt: 0 },
+        }
+      );
     } else if (filterOptions.account === 'specialDeposit') {
       accountDetails = await this.accountRepository
         .find({
@@ -179,6 +222,11 @@ export default class MembersService {
         .limit(limit)
         .populate('user')
         .select('accountInformation.specialDeposit');
+      totalNumberOfAccountDetails = await this.accountRepository.countDocuments(
+        {
+          'accountInformation.specialDeposit': { $gt: 0 },
+        }
+      );
     } else if (filterOptions.account === 'fine') {
       accountDetails = await this.accountRepository
         .find({
@@ -189,8 +237,13 @@ export default class MembersService {
         .limit(limit)
         .populate('user')
         .select('accountInformation.fine');
+      totalNumberOfAccountDetails = await this.accountRepository.countDocuments(
+        {
+          'accountInformation.fine': { $gt: 0 },
+        }
+      );
     }
-    return { accountDetails, page, limit, skip };
+    return { accountDetails, page, limit, skip, totalNumberOfAccountDetails };
   }
 
   async getMemberForMembers(id: string) {

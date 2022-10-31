@@ -7,12 +7,11 @@ export default class MembersController {
   constructor(private readonly membersService: MembersService) {}
   async getAllMembers(req: Request, res: Response, next: NextFunction) {
     try {
-      const { members, page } = await this.membersService.getAllMembers(
-        req.query
-      );
+      const { members, page, totalNumberOfMembers } =
+        await this.membersService.getAllMembers(req.query);
       return res.status(200).json({
         status: 'success',
-        totalNumberOfMembers: members.length,
+        totalNumberOfMembers,
         page,
         members,
       });
@@ -64,11 +63,11 @@ export default class MembersController {
     next: NextFunction
   ) {
     try {
-      const { accountDetails, page, limit, skip } =
+      const { accountDetails, page, limit, skip, totalNumberOfAccountDetails } =
         await this.membersService.getAccountTotalDetails(req.query);
       return res.status(200).json({
         status: 'success',
-        totalNumberOfMembers: accountDetails.length,
+        totalNumberOfAccountDetails,
         page,
         limit,
         skip,

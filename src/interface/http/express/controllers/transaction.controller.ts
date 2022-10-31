@@ -105,12 +105,11 @@ export default class TransactionController {
 
   async getMemberTransactions(req: Request, res: Response, next: NextFunction) {
     try {
-      const { transactions, page, limit, account } =
+      const { transactions, page, limit, account, totalNumberOfTransactions } =
         await this.transactionService.getTransactionsByMember(req.query);
       return res.status(200).json({
         status: 'success',
-        totalNumberOfTransactions:
-          transactions !== undefined ? transactions.length : 0,
+        totalNumberOfTransactions,
         page,
         limit,
         account,

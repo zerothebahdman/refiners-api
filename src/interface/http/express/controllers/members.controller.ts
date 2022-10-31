@@ -78,4 +78,20 @@ export default class MembersController {
       return next(new AppException(err.message, err.status));
     }
   }
+
+  async getMemberForMembers(
+    req: RequestType,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const member = await this.membersService.getMemberForMembers(req.user.id);
+      return res.status(200).json({
+        status: 'success',
+        member,
+      });
+    } catch (err: any) {
+      return next(new AppException(err.message, err.status));
+    }
+  }
 }

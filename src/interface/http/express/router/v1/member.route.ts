@@ -50,4 +50,13 @@ router.get(
   }
 );
 
+router.get(
+  '/get-member',
+  isUserAuthenticated,
+  restrictAccessTo('member'),
+  (req, res, next) => {
+    membersController.getMemberForMembers(req, res, next);
+  }
+);
+
 export default router;

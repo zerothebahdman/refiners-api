@@ -192,4 +192,11 @@ export default class MembersService {
     }
     return { accountDetails, page, limit, skip };
   }
+
+  async getMemberForMembers(id: string) {
+    const members = await this.membersRepository
+      .find({ role: ROLES.MEMBER, _id: { $ne: id } })
+      .select('firstName lastName phoneNumber username');
+    return members;
+  }
 }

@@ -124,8 +124,9 @@ export default class MembersService {
       accountDetails = ignorePagination
         ? await this.accountRepository.find({
             'accountInformation.shareCapital': { $gt: 0 },
-          }) // @ts-ignore
-        : await this.accountRepository.paginate(
+          })
+        : // @ts-ignore
+          await this.accountRepository.paginate(
             {
               'accountInformation.shareCapital': { $gt: 0 },
             },

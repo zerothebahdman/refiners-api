@@ -4,6 +4,7 @@ import TransactionService from '../../../../services/Transaction.service';
 import { TRANSACTION_TYPE } from '../../../../utils/constants';
 import MembersService from '../../../../services/Members.service';
 import moment from 'moment';
+import pick from '../../../../utils/pick';
 
 export default class TransactionController {
   constructor(
@@ -105,16 +106,15 @@ export default class TransactionController {
 
   async getMemberTransactions(req: Request, res: Response, next: NextFunction) {
     try {
-      const { transactions, page, limit, account, totalNumberOfTransactions } =
-        await this.transactionService.getTransactionsByMember(req.query);
+      const filter = pick(req.query, ['user', 'filter']);
+      const options = pick(req.query, ['limit', 'page', 'sort']);
+      const transactions =
+        await this.transactionService.getTransactionsByMember(filter, options);
       return res.status(200).json({
         status: 'success',
-        totalNumberOfTransactions,
-        page,
-        limit,
-        account,
-        transactions: transactions === undefined ? [] : transactions,
+        transactions,
       });
+      // : transactions === undefined ? [] : transactions
     } catch (err: any) {
       return next(new AppException(err.message, err.status));
     }

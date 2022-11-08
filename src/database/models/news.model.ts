@@ -1,5 +1,6 @@
 import { Schema, model } from 'mongoose';
 import { NewsInterface } from '../../../index';
+import paginate from '../plugins/paginate.plugin';
 
 const NewsSchema = new Schema<NewsInterface>(
   {
@@ -25,5 +26,6 @@ const NewsSchema = new Schema<NewsInterface>(
   }
 );
 
+NewsSchema.plugin(paginate);
 const News = model<NewsInterface>('News', NewsSchema);
 export default News;

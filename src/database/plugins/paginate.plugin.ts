@@ -44,7 +44,7 @@ const paginate = (schema: any): void => {
     const skip = (page - 1) * limit;
 
     const countPromise = this.countDocuments(filter).exec();
-    let docsPromise = this.find(filter).sort(sort).skip(skip).limit(limit);
+    let docsPromise = this.find(filter).sort(sort).skip(skip).limit(limit).select(options.select);
 
     if (options.populate) {
       options.populate.split(',').forEach((populateOption: any) => {

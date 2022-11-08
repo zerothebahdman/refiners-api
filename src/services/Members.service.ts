@@ -116,11 +116,12 @@ export default class MembersService {
 
   async getAccountTotalDetails(
     filterOptions: any,
-    options: {},
+    options: any,
     ignorePagination = false
   ) {
     let accountDetails;
     if (filterOptions.account === 'shareCapital') {
+      options.select = 'accountInformation.shareCapital';
       accountDetails = ignorePagination
         ? await this.accountRepository.find({
             'accountInformation.shareCapital': { $gt: 0 },
@@ -133,6 +134,7 @@ export default class MembersService {
             options
           );
     } else if (filterOptions.account === 'thriftSavings') {
+      options.select = 'accountInformation.thriftSavings';
       accountDetails = ignorePagination
         ? await this.accountRepository.find({
             'accountInformation.thriftSavings': { $gt: 0 },
@@ -144,6 +146,7 @@ export default class MembersService {
             options
           );
     } else if (filterOptions.account === 'commodityTrading') {
+      options.select = 'accountInformation.commodityTrading';
       accountDetails = ignorePagination
         ? await this.accountRepository.find({
             'accountInformation.commodityTrading': { $gt: 0 },
@@ -155,6 +158,7 @@ export default class MembersService {
             options
           );
     } else if (filterOptions.account === 'loan') {
+      options.select = 'accountInformation.loan';
       accountDetails = ignorePagination
         ? await this.accountRepository.find({
             'accountInformation.loan': { $gt: 0 },
@@ -166,6 +170,7 @@ export default class MembersService {
             options
           );
     } else if (filterOptions.account === 'projectFinancing') {
+      options.select = 'accountInformation.projectFinancing';
       accountDetails = ignorePagination
         ? await this.accountRepository.find({
             'accountInformation.projectFinancing': { $gt: 0 },
@@ -177,6 +182,7 @@ export default class MembersService {
             options
           );
     } else if (filterOptions.account === 'specialDeposit') {
+      options.select = 'accountInformation.specialDeposit';
       accountDetails = ignorePagination
         ? await this.accountRepository.find({
             'accountInformation.specialDeposit': { $gt: 0 },
@@ -188,6 +194,7 @@ export default class MembersService {
             options
           );
     } else if (filterOptions.account === 'fine') {
+      options.select = 'accountInformation.fine';
       accountDetails = ignorePagination
         ? await this.accountRepository.find({
             'accountInformation.fine': { $gt: 0 },

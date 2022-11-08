@@ -1,6 +1,7 @@
 import { Schema, model } from 'mongoose';
 import { UserInterface } from '../../../index';
 import { ROLES } from '../../utils/constants';
+import paginate from '../plugins/paginate.plugin';
 
 const UserSchema = new Schema<UserInterface>(
   {
@@ -72,5 +73,6 @@ const UserSchema = new Schema<UserInterface>(
   }
 );
 
+UserSchema.plugin(paginate);
 const User = model<UserInterface>('User', UserSchema);
 export default User;

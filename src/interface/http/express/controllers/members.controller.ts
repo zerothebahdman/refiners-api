@@ -2,17 +2,21 @@ import { NextFunction, Request, Response } from 'express';
 import MembersService from '../../../../services/Members.service';
 import AppException from '../../../../exceptions/AppException';
 import { RequestType } from '../middlewares/auth.middleware';
+import pick from '../../../../utils/pick';
 
 export default class MembersController {
   constructor(private readonly membersService: MembersService) {}
   async getAllMembers(req: Request, res: Response, next: NextFunction) {
     try {
-      const { members, page, totalNumberOfMembers } =
-        await this.membersService.getAllMembers(req.query);
+      const filter = pick(req.query, ['role']);
+      const options = pick(req.query, ['sortBy', 'page', 'limit']);
+      const members = await this.membersService.getAllMembers(
+        filter,
+        options,
+        !!req.query.ignorePagination
+      );
       return res.status(200).json({
         status: 'success',
-        totalNumberOfMembers,
-        page,
         members,
       });
     } catch (err: any) {
@@ -63,14 +67,15 @@ export default class MembersController {
     next: NextFunction
   ) {
     try {
-      const { accountDetails, page, limit, skip, totalNumberOfAccountDetails } =
-        await this.membersService.getAccountTotalDetails(req.query);
+      const filter = pick(req.query, ['account']);
+      const options = pick(req.query, ['sortBy', 'page', 'limit']);
+      const accountDetails = await this.membersService.getAccountTotalDetails(
+        filter,
+        options,
+        !!req.query.ignorePagination
+      );
       return res.status(200).json({
         status: 'success',
-        totalNumberOfAccountDetails,
-        page,
-        limit,
-        skip,
         accountDetails,
       });
     } catch (err: any) {

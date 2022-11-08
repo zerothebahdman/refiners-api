@@ -1,6 +1,7 @@
 import { Schema, model } from 'mongoose';
 import auditableFields from '../plugins/auditableFields.plugin';
 import { AccountInterface } from '../../../index';
+import paginate from '../plugins/paginate.plugin';
 
 const AccountSchema = new Schema<AccountInterface>(
   {
@@ -42,6 +43,6 @@ const AccountSchema = new Schema<AccountInterface>(
     },
   }
 );
-
+AccountSchema.plugin(paginate);
 const Account = model<AccountInterface>('Account', AccountSchema);
 export default Account;

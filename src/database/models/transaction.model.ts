@@ -1,6 +1,7 @@
 import { Schema, model } from 'mongoose';
 import auditableFields from '../plugins/auditableFields.plugin';
 import { TRANSACTION_TYPE } from '../../utils/constants';
+import paginate from '../plugins/paginate.plugin';
 
 const TransactionSchema = new Schema(
   {
@@ -25,5 +26,6 @@ const TransactionSchema = new Schema(
   }
 );
 
+TransactionSchema.plugin(paginate);
 const Transaction = model('Transaction', TransactionSchema);
 export default Transaction;

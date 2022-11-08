@@ -67,14 +67,15 @@ export default class MembersController {
     next: NextFunction
   ) {
     try {
-      const { accountDetails, page, limit, skip, totalNumberOfAccountDetails } =
-        await this.membersService.getAccountTotalDetails(req.query);
+      const filter = pick(req.query, ['account']);
+      const options = pick(req.query, ['sortBy', 'page', 'limit']);
+      const accountDetails = await this.membersService.getAccountTotalDetails(
+        filter,
+        options,
+        !!req.query.ignorePagination
+      );
       return res.status(200).json({
         status: 'success',
-        totalNumberOfAccountDetails,
-        page,
-        limit,
-        skip,
         accountDetails,
       });
     } catch (err: any) {

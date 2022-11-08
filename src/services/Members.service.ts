@@ -1,6 +1,5 @@
 import User from '../database/models/user.model';
 import { AccountInterface, UserInterface } from '../../index';
-import QueryString from 'qs';
 import { ROLES } from '../utils/constants';
 import Account from '../database/models/Accounts.model';
 import EncryptionService from './Encryption.service';
@@ -115,133 +114,91 @@ export default class MembersService {
     return accountSummaries;
   }
 
-  async getAccountTotalDetails(filterOptions: QueryString.ParsedQs): Promise<{
-    accountDetails: Omit<
-      import('mongoose').Document<unknown, any, AccountInterface> &
-        AccountInterface & { _id: import('mongoose').Types.ObjectId },
-      never
-    >[];
-    page: number;
-    limit: number;
-    skip: number;
-    totalNumberOfAccountDetails: number;
-  }> {
-    const page = Number(filterOptions.page) || 1;
-    const limit = Number(filterOptions.limit) || 10;
-    const skip = (page - 1) * limit;
-    // const members = await this.membersRepository
-    //   .find({ role: ROLES.MEMBER })
-    //   .skip(skip)
-    //   .limit(limit);
+  async getAccountTotalDetails(
+    filterOptions: any,
+    options: {},
+    ignorePagination = false
+  ) {
     let accountDetails;
-    let totalNumberOfAccountDetails;
     if (filterOptions.account === 'shareCapital') {
-      accountDetails = await this.accountRepository
-        .find({
-          'accountInformation.shareCapital': { $gt: 0 },
-        })
-        .sort({ 'accountInformation.shareCapital': -1 })
-        .skip(skip)
-        .limit(limit)
-        .populate('user')
-        .select('accountInformation.shareCapital');
-      totalNumberOfAccountDetails = await this.accountRepository.countDocuments(
-        {
-          'accountInformation.shareCapital': { $gt: 0 },
-        }
-      );
+      accountDetails = ignorePagination
+        ? await this.accountRepository.find({
+            'accountInformation.shareCapital': { $gt: 0 },
+          }) // @ts-ignore
+        : await this.accountRepository.paginate(
+            {
+              'accountInformation.shareCapital': { $gt: 0 },
+            },
+            options
+          );
     } else if (filterOptions.account === 'thriftSavings') {
-      accountDetails = await this.accountRepository
-        .find({
-          'accountInformation.thriftSavings': { $gt: 0 },
-        })
-        .sort({ 'accountInformation.thriftSavings': -1 })
-        .skip(skip)
-        .limit(limit)
-        .populate('user')
-        .select('accountInformation.thriftSavings');
-      totalNumberOfAccountDetails = await this.accountRepository.countDocuments(
-        {
-          'accountInformation.thriftSavings': { $gt: 0 },
-        }
-      );
+      accountDetails = ignorePagination
+        ? await this.accountRepository.find({
+            'accountInformation.thriftSavings': { $gt: 0 },
+          }) // @ts-ignore
+        : await this.accountRepository.paginate(
+            {
+              'accountInformation.thriftSavings': { $gt: 0 },
+            },
+            options
+          );
     } else if (filterOptions.account === 'commodityTrading') {
-      accountDetails = await this.accountRepository
-        .find({
-          'accountInformation.commodityTrading': { $gt: 0 },
-        })
-        .sort({ 'accountInformation.commodityTrading': -1 })
-        .skip(skip)
-        .limit(limit)
-        .populate('user')
-        .select('accountInformation.commodityTrading');
-      totalNumberOfAccountDetails = await this.accountRepository.countDocuments(
-        {
-          'accountInformation.commodityTrading': { $gt: 0 },
-        }
-      );
+      accountDetails = ignorePagination
+        ? await this.accountRepository.find({
+            'accountInformation.commodityTrading': { $gt: 0 },
+          }) // @ts-ignore
+        : await this.accountRepository.paginate(
+            {
+              'accountInformation.commodityTrading': { $gt: 0 },
+            },
+            options
+          );
     } else if (filterOptions.account === 'loan') {
-      accountDetails = await this.accountRepository
-        .find({
-          'accountInformation.loan': { $gt: 0 },
-        })
-        .sort({ 'accountInformation.loan': -1 })
-        .skip(skip)
-        .limit(limit)
-        .populate('user')
-        .select('accountInformation.loan');
-      totalNumberOfAccountDetails = await this.accountRepository.countDocuments(
-        {
-          'accountInformation.loan': { $gt: 0 },
-        }
-      );
+      accountDetails = ignorePagination
+        ? await this.accountRepository.find({
+            'accountInformation.loan': { $gt: 0 },
+          }) // @ts-ignore
+        : await this.accountRepository.paginate(
+            {
+              'accountInformation.loan': { $gt: 0 },
+            },
+            options
+          );
     } else if (filterOptions.account === 'projectFinancing') {
-      accountDetails = await this.accountRepository
-        .find({
-          'accountInformation.projectFinancing': { $gt: 0 },
-        })
-        .sort({ 'accountInformation.projectFinancing': -1 })
-        .skip(skip)
-        .limit(limit)
-        .populate('user')
-        .select('accountInformation.projectFinancing');
-      totalNumberOfAccountDetails = await this.accountRepository.countDocuments(
-        {
-          'accountInformation.projectFinancing': { $gt: 0 },
-        }
-      );
+      accountDetails = ignorePagination
+        ? await this.accountRepository.find({
+            'accountInformation.projectFinancing': { $gt: 0 },
+          }) // @ts-ignore
+        : await this.accountRepository.paginate(
+            {
+              'accountInformation.projectFinancing': { $gt: 0 },
+            },
+            options
+          );
     } else if (filterOptions.account === 'specialDeposit') {
-      accountDetails = await this.accountRepository
-        .find({
-          'accountInformation.specialDeposit': { $gt: 0 },
-        })
-        .sort({ 'accountInformation.specialDeposit': -1 })
-        .skip(skip)
-        .limit(limit)
-        .populate('user')
-        .select('accountInformation.specialDeposit');
-      totalNumberOfAccountDetails = await this.accountRepository.countDocuments(
-        {
-          'accountInformation.specialDeposit': { $gt: 0 },
-        }
-      );
+      accountDetails = ignorePagination
+        ? await this.accountRepository.find({
+            'accountInformation.specialDeposit': { $gt: 0 },
+          }) // @ts-ignore
+        : await this.accountRepository.paginate(
+            {
+              'accountInformation.specialDeposit': { $gt: 0 },
+            },
+            options
+          );
     } else if (filterOptions.account === 'fine') {
-      accountDetails = await this.accountRepository
-        .find({
-          'accountInformation.fine': { $gt: 0 },
-        })
-        .sort({ 'accountInformation.fine': -1 })
-        .skip(skip)
-        .limit(limit)
-        .populate('user')
-        .select('accountInformation.fine');
-      totalNumberOfAccountDetails = await this.accountRepository.countDocuments(
-        {
-          'accountInformation.fine': { $gt: 0 },
-        }
-      );
+      accountDetails = ignorePagination
+        ? await this.accountRepository.find({
+            'accountInformation.fine': { $gt: 0 },
+          }) // @ts-ignore
+        : await this.accountRepository.paginate(
+            {
+              'accountInformation.fine': { $gt: 0 },
+            },
+            options
+          );
     }
-    return { accountDetails, page, limit, skip, totalNumberOfAccountDetails };
+    return accountDetails;
   }
 
   async getMemberForMembers(id: string) {

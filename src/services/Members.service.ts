@@ -12,22 +12,22 @@ export default class MembersService {
     private readonly encryptionService: EncryptionService
   ) {}
 
-  async getAllMembers(filterOptions: QueryString.ParsedQs): Promise<{
-    members: UserInterface[];
-    page: number;
-    totalNumberOfMembers: number;
-  }> {
-    const page = Number(filterOptions.page) || 1;
-    const limit = Number(filterOptions.limit) || 10;
-    const skip = (page - 1) * limit;
-    const members = await this.membersRepository
-      .find({ role: ROLES.MEMBER })
-      .skip(skip)
-      .limit(limit);
-    const totalNumberOfMembers = await this.membersRepository.countDocuments({
-      role: ROLES.MEMBER,
-    });
-    return { members, page, totalNumberOfMembers };
+  async getAllMembers(
+    filterOptions: any,
+    options: {},
+    ignorePagination = false
+  ): Promise<
+    (import('mongoose').Document<unknown, any, UserInterface> &
+      UserInterface &
+      Required<{ _id: string }>)[]
+  > {
+    filterOptions.role = ROLES.MEMBER;
+    filterOptions.deletedAt = null;
+    const members = ignorePagination
+      ? await this.membersRepository.find(filterOptions)
+      : // @ts-ignore
+        await this.membersRepository.paginate(filterOptions, options);
+    return members;
   }
 
   async getMemberById(id: string): Promise<UserInterface> {
@@ -115,9 +115,7 @@ export default class MembersService {
     return accountSummaries;
   }
 
-  async getAccountTotalDetails(
-    filterOptions: QueryString.ParsedQs
-  ): Promise<{
+  async getAccountTotalDetails(filterOptions: QueryString.ParsedQs): Promise<{
     accountDetails: Omit<
       import('mongoose').Document<unknown, any, AccountInterface> &
         AccountInterface & { _id: import('mongoose').Types.ObjectId },

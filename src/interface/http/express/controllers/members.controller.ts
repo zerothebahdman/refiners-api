@@ -68,7 +68,7 @@ export default class MembersController {
   ) {
     try {
       const filter = pick(req.query, ['account']);
-      const options = pick(req.query, ['sortBy', 'page', 'limit']);
+      const options = pick(req.query, ['sortBy', 'page', 'limit', 'populate']);
       const accountDetails = await this.membersService.getAccountTotalDetails(
         filter,
         options,

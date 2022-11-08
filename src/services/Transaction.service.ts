@@ -1,4 +1,3 @@
-import QueryString from 'qs';
 import Account from '../database/models/Accounts.model';
 import Transaction from '../database/models/transaction.model';
 export default class TransactionService {
@@ -9,97 +8,82 @@ export default class TransactionService {
     return transaction;
   }
 
-  async getTransactionsByMember(filterOptions: QueryString.ParsedQs) {
-    const page = Number(filterOptions.page) || 1;
-    const limit = Number(filterOptions.limit) || 10;
-    const skip = (page - 1) * limit;
+  async getTransactionsByMember(
+    filterOptions: any,
+    options: {},
+    ignorePagination = false
+  ) {
     let transactions;
-    let totalNumberOfTransactions;
-    if (filterOptions.allTransactions) {
-      transactions = await this.transactionRepository
-        .find({ user: filterOptions.user })
-        .skip(skip)
-        .limit(limit);
-      totalNumberOfTransactions =
-        await this.transactionRepository.countDocuments({
-          user: filterOptions.user,
-        });
-    } else if (filterOptions.thriftSavings) {
-      transactions = await this.transactionRepository
-        .find({ user: filterOptions.user, account: 'thriftSavings' })
-        .skip(skip)
-        .limit(limit);
-      totalNumberOfTransactions =
-        await this.transactionRepository.countDocuments({
-          user: filterOptions.user,
-          account: 'thriftSavings',
-        });
-    } else if (filterOptions.shareCapital) {
-      transactions = await this.transactionRepository
-        .find({ user: filterOptions.user, account: 'shareCapital' })
-        .skip(skip)
-        .limit(limit);
-      totalNumberOfTransactions =
-        await this.transactionRepository.countDocuments({
-          user: filterOptions.user,
-          account: 'shareCapital',
-        });
-    } else if (filterOptions.fine) {
-      transactions = await this.transactionRepository
-        .find({ user: filterOptions.user, account: 'fine' })
-        .skip(skip)
-        .limit(limit);
-      totalNumberOfTransactions =
-        await this.transactionRepository.countDocuments({
-          user: filterOptions.user,
-          account: 'fine',
-        });
-    } else if (filterOptions.loan) {
-      transactions = await this.transactionRepository
-        .find({ user: filterOptions.user, account: 'loan' })
-        .skip(skip)
-        .limit(limit);
-      totalNumberOfTransactions =
-        await this.transactionRepository.countDocuments({
-          user: filterOptions.user,
-          account: 'loan',
-        });
-    } else if (filterOptions.projectFinancing) {
-      transactions = await this.transactionRepository
-        .find({
-          user: filterOptions.user,
-          account: 'projectFinancing',
-        })
-        .skip(skip)
-        .limit(limit);
-      totalNumberOfTransactions =
-        await this.transactionRepository.countDocuments({
-          user: filterOptions.user,
-          account: 'projectFinancing',
-        });
-    } else if (filterOptions.specialDeposit) {
-      transactions = await this.transactionRepository
-        .find({ user: filterOptions.user, account: 'specialDeposit' })
-        .skip(skip)
-        .limit(limit);
-      totalNumberOfTransactions =
-        await this.transactionRepository.countDocuments({
-          user: filterOptions.user,
-          account: 'specialDeposit',
-        });
-    } else if (filterOptions.commodityTrading) {
-      transactions = await this.transactionRepository
-        .find({ user: filterOptions.user, account: 'commodityTrading' })
-        .skip(skip)
-        .limit(limit);
-      totalNumberOfTransactions =
-        await this.transactionRepository.countDocuments({
-          user: filterOptions.user,
-          account: 'commodityTrading',
-        });
+    filterOptions.account = filterOptions.filter;
+    if (filterOptions.filter === 'allTransactions') {
+      delete filterOptions.filter;
+      delete filterOptions.account;
+      console.log(filterOptions);
+      transactions = ignorePagination
+        ? await this.transactionRepository.find({
+            user: filterOptions.user,
+          })
+        : // @ts-ignore
+          await this.transactionRepository.paginate(filterOptions, options);
+    } else if (filterOptions.filter === 'thriftSavings') {
+      filterOptions.account = 'thriftSavings';
+      transactions = ignorePagination
+        ? await this.transactionRepository.find({
+            user: filterOptions.user,
+            account: 'thriftSavings',
+          }) // @ts-ignore
+        : await this.transactionRepository.paginate(filterOptions, options);
+    } else if (filterOptions.filter === 'shareCapital') {
+      filterOptions.account = 'shareCapital';
+      transactions = ignorePagination
+        ? await this.transactionRepository.find({
+            user: filterOptions.user,
+            account: 'shareCapital',
+          }) // @ts-ignore
+        : await this.transactionRepository.paginate(filterOptions, options);
+    } else if (filterOptions.filter === 'fine') {
+      filterOptions.account = 'fine';
+      transactions = ignorePagination
+        ? await this.transactionRepository.find({
+            user: filterOptions.user,
+            account: 'fine',
+          }) // @ts-ignore
+        : await this.transactionRepository.paginate(filterOptions, options);
+    } else if (filterOptions.filter === 'loan') {
+      filterOptions.account = 'line';
+      transactions = ignorePagination
+        ? await this.transactionRepository.find({
+            user: filterOptions.user,
+            account: 'loan',
+          }) // @ts-ignore
+        : await this.transactionRepository.paginate(filterOptions, options);
+    } else if (filterOptions.filter === 'projectFinancing') {
+      filterOptions.account = 'projectFinancing';
+      transactions = ignorePagination
+        ? await this.transactionRepository.find({
+            user: filterOptions.user,
+            account: 'projectFinancing',
+          }) // @ts-ignore
+        : await this.transactionRepository.paginate(filterOptions, options);
+    } else if (filterOptions.filter === 'specialDeposit') {
+      filterOptions.account = 'specialDeposit';
+      transactions = ignorePagination
+        ? await this.transactionRepository.find({
+            user: filterOptions.user,
+            account: 'specialDeposit',
+          }) // @ts-ignore
+        : await this.transactionRepository.paginate(filterOptions, options);
+    } else if (filterOptions.filter === 'commodityTrading') {
+      filterOptions.account = 'commodityTrading';
+      transactions = ignorePagination
+        ? await this.transactionRepository.find({
+            user: filterOptions.user,
+            account: 'commodityTrading',
+          }) // @ts-ignore
+        : await this.transactionRepository.paginate(filterOptions, options);
     }
     const account = await Account.findOne({ user: filterOptions.user });
     account.toJSON;
-    return { transactions, page, limit, account, totalNumberOfTransactions };
+    return transactions;
   }
 }

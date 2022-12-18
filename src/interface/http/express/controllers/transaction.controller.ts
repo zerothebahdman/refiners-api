@@ -107,7 +107,7 @@ export default class TransactionController {
   async getMemberTransactions(req: Request, res: Response, next: NextFunction) {
     try {
       const filter = pick(req.query, ['user', 'filter']);
-      const options = pick(req.query, ['limit', 'page', 'sort']);
+      const options = pick(req.query, ['limit', 'page', 'sortBy']);
       const transactions =
         await this.transactionService.getTransactionsByMember(filter, options);
       return res.status(200).json({

@@ -71,8 +71,7 @@ export default class MembersController {
       const options = pick(req.query, ['sortBy', 'page', 'limit', 'populate']);
       const accountDetails = await this.membersService.getAccountTotalDetails(
         filter,
-        options,
-        !!req.query.ignorePagination
+        options
       );
       return res.status(200).json({
         status: 'success',

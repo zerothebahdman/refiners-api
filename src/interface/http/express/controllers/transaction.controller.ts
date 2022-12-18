@@ -108,10 +108,11 @@ export default class TransactionController {
     try {
       const filter = pick(req.query, ['user', 'filter']);
       const options = pick(req.query, ['limit', 'page', 'sortBy']);
-      const transactions =
+      const { transactions, account } =
         await this.transactionService.getTransactionsByMember(filter, options);
       return res.status(200).json({
         status: 'success',
+        account,
         transactions,
       });
       // : transactions === undefined ? [] : transactions

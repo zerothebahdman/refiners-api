@@ -83,6 +83,6 @@ export default class TransactionService {
     }
     const account = await Account.findOne({ user: filterOptions.user });
     account.toJSON;
-    return transactions;
+    return { transactions, account };
   }
 }

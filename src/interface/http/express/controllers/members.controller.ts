@@ -27,7 +27,7 @@ export default class MembersController {
   async updateMember(req: RequestType, res: Response, next: NextFunction) {
     try {
       const user = await this.membersService.updateMemberById(
-        req.user.id,
+        req.params.memberId,
         req.body
       );
 

@@ -38,10 +38,11 @@ export default class MembersService {
     id: string,
     updateBody: UserInterface
   ): Promise<UserInterface> {
-    if (updateBody.password)
+    if (updateBody.password) {
       updateBody.password = await this.encryptionService.hashPassword(
         updateBody.password
       );
+    }
 
     const member = await this.membersRepository.findById(id);
 

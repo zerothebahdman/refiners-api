@@ -26,6 +26,10 @@ export default class NodemailerModule {
         pass: config.MAIL_PASSWORD,
       },
       ignoreTLS: false,
+      requireTLS: true,
+      tls: {
+        rejectUnauthorized: false,
+      },
     });
   }
 

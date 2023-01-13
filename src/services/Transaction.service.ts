@@ -18,7 +18,6 @@ export default class TransactionService {
     if (filterOptions.filter === 'allTransactions') {
       delete filterOptions.filter;
       delete filterOptions.account;
-      console.log(filterOptions);
       transactions = ignorePagination
         ? await this.transactionRepository.find({
             user: filterOptions.user,
@@ -84,6 +83,6 @@ export default class TransactionService {
     }
     const account = await Account.findOne({ user: filterOptions.user });
     account.toJSON;
-    return transactions;
+    return { transactions, account };
   }
 }

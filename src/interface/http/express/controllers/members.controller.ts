@@ -27,7 +27,7 @@ export default class MembersController {
   async updateMember(req: RequestType, res: Response, next: NextFunction) {
     try {
       const user = await this.membersService.updateMemberById(
-        req.user.id,
+        req.params.memberId,
         req.body
       );
 
@@ -71,8 +71,7 @@ export default class MembersController {
       const options = pick(req.query, ['sortBy', 'page', 'limit', 'populate']);
       const accountDetails = await this.membersService.getAccountTotalDetails(
         filter,
-        options,
-        !!req.query.ignorePagination
+        options
       );
       return res.status(200).json({
         status: 'success',

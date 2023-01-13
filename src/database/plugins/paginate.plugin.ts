@@ -20,6 +20,8 @@ const paginate = (schema: any): void => {
    */
   schema.statics.paginate = async function (filter: any, options: any) {
     let sort = '';
+    console.log(options);
+
     if (options.sortBy) {
       const sortingCriteria: string[] = [];
       options.sortBy
@@ -29,6 +31,7 @@ const paginate = (schema: any): void => {
           sortingCriteria.push((order === 'desc' ? '-' : '') + key);
         });
       sort = sortingCriteria.join(' ');
+      console.log(sort);
     } else {
       sort = 'createdAt';
     }
@@ -44,7 +47,11 @@ const paginate = (schema: any): void => {
     const skip = (page - 1) * limit;
 
     const countPromise = this.countDocuments(filter).exec();
-    let docsPromise = this.find(filter).sort(sort).skip(skip).limit(limit).select(options.select);
+    let docsPromise = this.find(filter)
+      .sort(sort)
+      .skip(skip)
+      .limit(limit)
+      .select(options.select);
 
     if (options.populate) {
       options.populate.split(',').forEach((populateOption: any) => {

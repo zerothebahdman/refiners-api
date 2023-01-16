@@ -100,17 +100,28 @@ export default class MembersService {
       })
     );
     const accountSummaries = {
-      thriftSavings: thriftSavings.reduce((acc, account) => acc + account),
-      shareCapital: shareCapital.reduce((acc, account) => acc + account),
-      fine: fine.reduce((acc, account) => acc + account),
-      loan: loan.reduce((acc, account) => acc + account),
-      projectFinancing: projectFinancing.reduce(
-        (acc, account) => acc + account
-      ),
-      specialDeposit: specialDeposit.reduce((acc, account) => acc + account),
-      commodityTrading: commodityTrading.reduce(
-        (acc, account) => acc + account
-      ),
+      thriftSavings:
+        thriftSavings.length > 0
+          ? thriftSavings.reduce((acc, account) => acc + account)
+          : 0,
+      shareCapital:
+        shareCapital.length > 0
+          ? shareCapital.reduce((acc, account) => acc + account)
+          : 0,
+      fine: fine.length > 0 ? fine.reduce((acc, account) => acc + account) : 0,
+      loan: loan.length > 0 ? loan.reduce((acc, account) => acc + account) : 0,
+      projectFinancing:
+        projectFinancing.length > 0
+          ? projectFinancing.reduce((acc, account) => acc + account)
+          : 0,
+      specialDeposit:
+        specialDeposit.length > 0
+          ? specialDeposit.reduce((acc, account) => acc + account)
+          : 0,
+      commodityTrading:
+        commodityTrading.length > 0
+          ? commodityTrading.reduce((acc, account) => acc + account)
+          : 0,
     };
     return accountSummaries;
   }

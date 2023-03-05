@@ -3,6 +3,7 @@ import MembersService from '../../../../services/Members.service';
 import AppException from '../../../../exceptions/AppException';
 import { RequestType } from '../middlewares/auth.middleware';
 import pick from '../../../../utils/pick';
+import httpStatus from 'http-status';
 
 export default class MembersController {
   constructor(private readonly membersService: MembersService) {}
@@ -39,7 +40,32 @@ export default class MembersController {
 
   async deleteMemberAccount(req: Request, res: Response, next: NextFunction) {
     try {
+      const memberAccount = await this.membersService.getMemberAccount(
+        req.params.memberId
+      );
+      if (!memberAccount) {
+        return next(
+          new AppException('Member account not found', httpStatus.BAD_REQUEST)
+        );
+      }
+      if (
+        memberAccount.accountInformation.shareCapital > 0 ||
+        memberAccount.accountInformation.commodityTrading > 0 ||
+        memberAccount.accountInformation.loan > 0 ||
+        memberAccount.accountInformation.thriftSavings > 0 ||
+        memberAccount.accountInformation.projectFinancing > 0 ||
+        memberAccount.accountInformation.fine ||
+        memberAccount.accountInformation
+      ) {
+        return next(
+          new AppException(
+            'Member account cannot be deleted, please clear users account first',
+            httpStatus.BAD_REQUEST
+          )
+        );
+      }
       await this.membersService.deleteMember(req.params.memberId);
+      await this.membersService.deleteMemberAccount(req.params.memberId);
       res.status(204).send();
     } catch (err: any) {
       return next(new AppException(err.message, err.status));

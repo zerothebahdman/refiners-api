@@ -20,10 +20,12 @@ export default class CreateUser {
 
       const _userNameExists = await User.findOne({
         username: req.body.username,
+        deletedAt: null,
       });
 
       const phoneNumberExists = await User.findOne({
         phoneNumber: req.body.phoneNumber,
+        deletedAt: null,
       });
 
       if (_userNameExists)

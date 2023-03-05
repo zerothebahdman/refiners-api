@@ -44,11 +44,8 @@ export default class MembersService {
       );
     }
 
-    const member = await this.membersRepository.findById(id);
-
-    Object.assign(member, updateBody);
-    await member.save();
-    return member;
+    const data = await User.findByIdAndUpdate(id, updateBody, { new: true });
+    return data;
   }
 
   async deleteMember(id: string): Promise<void> {
@@ -73,6 +70,10 @@ export default class MembersService {
   > {
     const newAccount = await this.accountRepository.create({ user: id });
     return newAccount;
+  }
+
+  async deleteMemberAccount(id: string): Promise<void> {
+    await this.accountRepository.findOneAndDelete({ user: id });
   }
 
   async getMembersAccountSummaries() {

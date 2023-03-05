@@ -11,7 +11,7 @@ export interface UserInterface {
   id: string;
   _id: string;
   occupation: string;
-  avatar: Object<{ image: string; meta: Object }>;
+  avatar: { image: string; meta: Object };
   businessAddress: string;
   gender: string;
   address: string;
@@ -35,15 +35,15 @@ export interface UserInterface {
 
 export interface AccountInterface {
   user: UserInterface | string;
-  accountInformation: Object<{
+  accountInformation: {
     shareCapital: number;
     thriftSavings: number;
     commodityTrading: number;
-    specialDepositTotal: number;
-    fineTotal: number;
-    loanTotal: number;
-    projectFinancingTotal: number;
-  }>;
+    specialDeposit: number;
+    fine: number;
+    loan: number;
+    projectFinancing: number;
+  };
   balance: number;
   debt: number;
 }

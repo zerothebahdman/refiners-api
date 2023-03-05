@@ -2,6 +2,7 @@ import { Schema, model } from 'mongoose';
 import { UserInterface } from '../../../index';
 import { ROLES } from '../../utils/constants';
 import paginate from '../plugins/paginate.plugin';
+import auditableFields from '../plugins/auditableFields.plugin';
 
 const UserSchema = new Schema<UserInterface>(
   {
@@ -53,6 +54,7 @@ const UserSchema = new Schema<UserInterface>(
       default: true,
       select: false,
     },
+    ...auditableFields,
   },
   {
     toJSON: {

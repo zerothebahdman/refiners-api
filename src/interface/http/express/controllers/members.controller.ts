@@ -55,7 +55,7 @@ export default class MembersController {
         memberAccount.accountInformation.thriftSavings > 0 ||
         memberAccount.accountInformation.projectFinancing > 0 ||
         memberAccount.accountInformation.fine ||
-        memberAccount.accountInformation
+        memberAccount.accountInformation.specialDeposit > 0
       ) {
         return next(
           new AppException(

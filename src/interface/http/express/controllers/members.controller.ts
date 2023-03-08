@@ -32,7 +32,7 @@ export default class MembersController {
         req.body
       );
 
-      return res.status(200).json({ status: 'record updated', user });
+      return res.status(200).json({ status: 'updated', user });
     } catch (err: any) {
       return next(new AppException(err.message, err.status));
     }

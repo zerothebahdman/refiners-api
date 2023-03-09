@@ -44,7 +44,11 @@ export default class MembersService {
       );
     }
 
-    const data = await User.findByIdAndUpdate(id, updateBody, { new: true });
+    const data = await User.findOneAndUpdate({ _id: id }, updateBody, {
+      new: true,
+    });
+    console.log(data);
+
     return data;
   }
 
